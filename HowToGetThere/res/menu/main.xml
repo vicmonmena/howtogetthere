@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/action_info"
+        android:orderInCategory="999"
+        android:showAsAction="never|ifRoom"
+        android:title="@string/action_info"
+        android:icon="@drawable/ic_action_info"/>
+    <item
+        android:id="@+id/action_add_marker"
+        android:orderInCategory="100"
+        android:showAsAction="never|ifRoom"
+        android:title="@string/action_add_marker"
+        android:icon="@drawable/ic_marker"/>
+    <item
+        android:id="@+id/action_clear_map"
+        android:orderInCategory="101"
+        android:showAsAction="never|ifRoom"
+        android:title="@string/action_clear_map"
+        android:icon="@drawable/ic_action_clear_map"/>
+    <item
+        android:id="@+id/action_map_type"
+        android:orderInCategory="102"
+        android:showAsAction="never|ifRoom"
+        android:title="@string/action_map_type"
+        android:icon="@drawable/ic_action_map_type"/>
+</menu>
