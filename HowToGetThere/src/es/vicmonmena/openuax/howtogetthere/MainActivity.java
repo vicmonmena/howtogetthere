@@ -4,17 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -31,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -99,6 +97,7 @@ public class MainActivity extends FragmentActivity implements OnMapLongClickList
 				Toast.makeText(this, getString(R.string.info_text), Toast.LENGTH_SHORT).show();
 				return true;
 			case R.id.action_add_marker:
+				//startNavigationRouce();
 				Toast.makeText(this, getString(R.string.coming_soon), Toast.LENGTH_LONG).show();
 				return true;
 			case R.id.action_clear_map:
@@ -165,7 +164,7 @@ public class MainActivity extends FragmentActivity implements OnMapLongClickList
 		    			.title(place)
 		    			.draggable(false)
 		    			.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_end));
-	    			map.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getPosition(), 10));
+	    			map.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getPosition(), 15));
 	    		} else {
 	    			// Crea el marcador inicial
 	    			MarkerOptions marker = new MarkerOptions()
@@ -175,7 +174,7 @@ public class MainActivity extends FragmentActivity implements OnMapLongClickList
 		    			.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker_start));
 	    			// Lo añadimos el primero de la lista
 	    			markers.add(0, marker);
-	    			map.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 10));
+	    			map.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 15));
 	    		}
 	    		// Actualizamos el campo de texto con la localización
 	    		((TextView)findViewById(fieldId)).setText(
@@ -328,7 +327,7 @@ public class MainActivity extends FragmentActivity implements OnMapLongClickList
 			.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_marker));
     	markers.add(marker);
     	// Camara mirando al marcador que inicia el recorrido
-		map.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 10));
+		map.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 15));
     }
     
 	/**
@@ -349,6 +348,46 @@ public class MainActivity extends FragmentActivity implements OnMapLongClickList
 		// Pintamos el marcador de destino si se ha definido
 		if (destination != null) {
 			map.addMarker(destination);
+		}
+	}
+	
+	/**
+	 * Realiza una navegación por la ruta trazada con la cámara
+	 */
+	private void startNavigationRouce() {
+		
+		// Mejor utilizar el servicio de navegación
+		if (markers.size() > 1 || (markers.size() > 0 && destination != null)) {
+			for (MarkerOptions marker : markers) {
+				
+				// Movemos la cámara al marcador
+				map.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), 15));
+				// Acercamos la cámara
+				map.animateCamera(CameraUpdateFactory.zoomIn());
+				// Mostramos el título del marcador
+				Marker locMarker = map.addMarker(marker);
+				locMarker.showInfoWindow();
+				// Alejamos la cámara con 2 segundos de animación
+				map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+				// Escondemos el título del marcador una vez lo avandonamos
+				locMarker.hideInfoWindow();
+				locMarker.remove();
+			}
+			
+			if (destination != null) {
+				// Movemos la cámara al marcador
+				map.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getPosition(), 15));
+				// Acercamos la cámara
+				map.animateCamera(CameraUpdateFactory.zoomIn());
+				// Mostramos el título del marcador
+				Marker locMarker = map.addMarker(destination);
+				locMarker.showInfoWindow();
+				// Alejamos la cámara con 2 segundos de animación
+				map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+				// Escondemos el título del marcador una vez lo avandonamos
+				locMarker.hideInfoWindow();
+				locMarker.remove();
+			}
 		}
 	}
 }
