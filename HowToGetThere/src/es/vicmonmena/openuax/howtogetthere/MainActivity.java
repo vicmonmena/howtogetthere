@@ -41,7 +41,7 @@ import es.vicmonmena.openuax.howtogetthere.utils.HowToGetThereUtils;
  * @author vicmonmena
  *
  */
-public class MainActivity extends FragmentActivity implements OnMapLongClickListener, LocationListener {
+public class MainActivity extends FragmentActivity implements OnMapLongClickListener {
 
 	/**
 	 * Etiqueta para los mensajes de log de esta clase
@@ -82,35 +82,7 @@ public class MainActivity extends FragmentActivity implements OnMapLongClickList
         } else {
         	Log.d(TAG, "Maps available!");
         	map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-        	
-        	// obtener LocationManager
-            locMngr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            
-            // ¿GPS activo?
-            if (!locMngr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            	new AlertDialog.Builder(this)
-    	    	.setTitle("GPS")
-    	    	.setMessage(getString(R.string.activate_gps))
-    	    	.setPositiveButton(android.R.string.yes,
-    	    	new DialogInterface.OnClickListener() {
-    	            public void onClick(DialogInterface dialog, int whichButton) {
-    	            	showsDialog = true;
-    	            	startActivityForResult(new Intent(
-    	            		Settings.ACTION_LOCATION_SOURCE_SETTINGS), 
-    	            		HowToGetThereUtils.REQUEST_CODE_PGPS_ACTIVATION);
-    	            }
-    	        })
-    	        .setNegativeButton(android.R.string.no,
-    	    	new DialogInterface.OnClickListener() {
-    	            public void onClick(DialogInterface dialog, int whichButton) {
-    	            	dialog.cancel();
-    	            }
-    	        })
-    	        .create().show();
-            }
-            
-            // Activar localización
-            locMngr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        	initMap();
         }
     }
     
@@ -329,12 +301,13 @@ public class MainActivity extends FragmentActivity implements OnMapLongClickList
 	/** 
      * Define los valores de los atributos del mapa como se muestra inicialmente
      */
-    private void initMap(Location myLocation) {
+    private void initMap() {
     	// Inicializamos el mapa
     	map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
     	map.setOnMapLongClickListener(this);
-    	LatLng myLatLong = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
-    	map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLong, 10));
+    	// UAX: 40.450996,-3.987479
+    	LatLng myLatLong = new LatLng(40.450996, -3.987479);
+    	map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLong, 15));
     	// Inicializa la lista de marcadores
     	markers = new ArrayList<MarkerOptions>();
     	
@@ -377,29 +350,5 @@ public class MainActivity extends FragmentActivity implements OnMapLongClickList
 		if (destination != null) {
 			map.addMarker(destination);
 		}
-	}
-
-	@Override
-	public void onLocationChanged(Location myLocation) {
-		initMap(myLocation);
-		locMngr.removeUpdates(this);
-	}
-
-	@Override
-	public void onProviderDisabled(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onProviderEnabled(String arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-		// TODO Auto-generated method stub
-		
 	}
 }
